@@ -66,6 +66,14 @@ def score_stock(ticker, openai_key=None, batch=False):
         explanation.append("No major valuation anomaly or sharp drop detected (mild opportunity).")
 
     summary = "; ".join(reasons)
+    thesis = None
+
+    # Add GPT-3.5 turbo thesis if API key present
+    if openai_key and score > 0:
+        try:
+            thesis = generate_thesis(data, openai_key)
+        except Exception as e:
+            thesis = f"(AI thesis unavailable: {str(e)})"
 
     result = {
         "name": data.get("name", ticker),
@@ -79,7 +87,31 @@ def score_stock(ticker, openai_key=None, batch=False):
         "eps": data.get("eps"),
         "price_drop_7d": data.get("price_drop_7d"),
         "price_drop_30d": data.get("price_drop_30d"),
-        "explanation": "\n".join([f"- {x}" for x in explanation])
+        "explanation": "\n".join([f"- {x}" for x in explanation]),
+        "thesis": thesis
     }
 
+    if thesis:
+        result["explanation"] += f"\n\n**AI Thesis:** {thesis}"
+
     return result
+
+def generate_thesis(data, openai_key):
+    import openai
+    # This uses ONLY GPT-3.5-turbo
+    prompt = (
+        f"Stock: {data.get('name', data['ticker'])}\n"
+        f"Exchange: {data.get('exchange', '')}\n"
+        f"P/E: {data.get('pe')}, P/B: {data.get('pb')}, ROE: {data.get('roe')}, "
+        f"EPS: {data.get('eps')}, 1M Price Drop: {data.get('price_drop_30d')}\n"
+        "Write a one-sentence summary for a savvy investor: "
+        "Is this a potentially undervalued opportunity? Use only data above."
+    )
+    client = openai.OpenAI(api_key=openai_key)
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",  # This line enforces 3.5-turbo only
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=80,
+        temperature=0.5,
+    )
+    return response.choices[0].message.content.strip()
