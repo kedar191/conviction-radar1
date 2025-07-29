@@ -91,6 +91,7 @@ def score_stock(ticker, openai_key=None, batch=False):
     return result
 
 def generate_thesis(data, openai_key):
+    import openai
     openai.api_key = openai_key
     prompt = (
         f"Stock: {data.get('name', data['ticker'])}\n"
@@ -100,8 +101,9 @@ def generate_thesis(data, openai_key):
         "Write a one-sentence summary for a savvy investor: "
         "Is this a potentially undervalued opportunity? Use only data above."
     )
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",  # Or "gpt-4" if you have access
+    client = openai.OpenAI(api_key=openai_key)
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}],
         max_tokens=80,
         temperature=0.5,
