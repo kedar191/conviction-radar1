@@ -1,5 +1,4 @@
 import yfinance as yf
-import openai
 
 def get_fundamentals(ticker):
     try:
@@ -36,40 +35,35 @@ def score_stock(ticker, openai_key=None, batch=False):
 
     score = 0
     reasons = []
-    explanation = ""
+    explanation = []
 
+    # Rule-based scoring and explanations
     if data["price_drop_30d"] is not None and data["price_drop_30d"] < -10:
         score += 20
         reasons.append("Significant 1-month price drop (>10%)")
-        explanation += f"- Stock price dropped {abs(data['price_drop_30d']):.2f}% in the last month (potential overreaction)\n"
-
+        explanation.append(f"Price dropped {abs(data['price_drop_30d']):.2f}% in the last month (possible overreaction).")
     if data["pe"] is not None and data["pe"] < 18:
         score += 20
         reasons.append("Low P/E ratio (<18)")
-        explanation += f"- P/E ratio is {data['pe']:.2f}, which is low versus market/sector\n"
-
+        explanation.append(f"P/E ratio is {data['pe']:.2f}, which is low for its sector.")
     if data["roe"] is not None and data["roe"] > 0.12:
         score += 15
         reasons.append("High Return on Equity (>12%)")
-        explanation += f"- Return on Equity is strong at {data['roe'] * 100:.2f}%\n"
-
+        explanation.append(f"Return on Equity is strong at {data['roe'] * 100:.2f}%.")
     if data["eps"] is not None and data["eps"] > 0:
         score += 15
         reasons.append("EPS is positive")
-        explanation += f"- Earnings per share (EPS) is positive at {data['eps']:.2f}\n"
-
+        explanation.append(f"Earnings per share (EPS) is positive at {data['eps']:.2f}.")
     if data["pb"] is not None and data["pb"] < 3:
         score += 10
         reasons.append("Low Price/Book (<3)")
-        explanation += f"- Price/Book ratio is {data['pb']:.2f}, relatively attractive\n"
-
+        explanation.append(f"Price/Book ratio is {data['pb']:.2f}, relatively attractive.")
     if score > 60:
         score += 10
         reasons.append("Multiple strong signals")
-        explanation += "- Multiple strong value signals detected\n"
-
+        explanation.append("Several strong value signals align (high-conviction pick).")
     if score < 40:
-        explanation += "- No major valuation anomaly or sharp drop detected (mild opportunity)\n"
+        explanation.append("No major valuation anomaly or sharp drop detected (mild opportunity).")
 
     summary = "; ".join(reasons)
 
@@ -85,27 +79,7 @@ def score_stock(ticker, openai_key=None, batch=False):
         "eps": data.get("eps"),
         "price_drop_7d": data.get("price_drop_7d"),
         "price_drop_30d": data.get("price_drop_30d"),
-        "explanation": explanation.strip()
+        "explanation": "\n".join([f"- {x}" for x in explanation])
     }
 
     return result
-
-def generate_thesis(data, openai_key):
-    import openai
-    openai.api_key = openai_key
-    prompt = (
-        f"Stock: {data.get('name', data['ticker'])}\n"
-        f"Exchange: {data.get('exchange', '')}\n"
-        f"P/E: {data.get('pe')}, P/B: {data.get('pb')}, ROE: {data.get('roe')}, "
-        f"EPS: {data.get('eps')}, 1M Price Drop: {data.get('price_drop_30d')}\n"
-        "Write a one-sentence summary for a savvy investor: "
-        "Is this a potentially undervalued opportunity? Use only data above."
-    )
-    client = openai.OpenAI(api_key=openai_key)
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[{"role": "user", "content": prompt}],
-        max_tokens=80,
-        temperature=0.5,
-    )
-    return response.choices[0].message.content.strip()
