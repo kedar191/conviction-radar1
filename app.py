@@ -26,6 +26,7 @@ if mode == "Single Stock":
             st.write(f"**Exchange:** {result['exchange']}")
             st.metric("Conviction Score", f"{result['score']}/100")
             st.write(result["summary"])
+            st.markdown(f"**Why flagged:**\n{result['explanation']}")
             st.write("----")
             st.json(result)
 elif mode == "Batch Mode":
