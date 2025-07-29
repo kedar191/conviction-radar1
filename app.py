@@ -1,6 +1,6 @@
 import streamlit as st
 import yfinance as yf
-from utils import score_stock, generate_thesis
+from utils import score_stock
 from tickers import batch_tickers
 
 st.set_page_config(page_title="Conviction Radar", layout="wide")
