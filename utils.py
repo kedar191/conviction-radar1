@@ -36,39 +36,42 @@ def score_stock(ticker, openai_key=None, batch=False):
 
     score = 0
     reasons = []
+    explanation = ""
 
     if data["price_drop_30d"] is not None and data["price_drop_30d"] < -10:
         score += 20
         reasons.append("Significant 1-month price drop (>10%)")
+        explanation += f"- Stock price dropped {abs(data['price_drop_30d']):.2f}% in the last month (potential overreaction)\n"
 
     if data["pe"] is not None and data["pe"] < 18:
         score += 20
         reasons.append("Low P/E ratio (<18)")
+        explanation += f"- P/E ratio is {data['pe']:.2f}, which is low versus market/sector\n"
 
     if data["roe"] is not None and data["roe"] > 0.12:
         score += 15
         reasons.append("High Return on Equity (>12%)")
+        explanation += f"- Return on Equity is strong at {data['roe'] * 100:.2f}%\n"
 
     if data["eps"] is not None and data["eps"] > 0:
         score += 15
         reasons.append("EPS is positive")
+        explanation += f"- Earnings per share (EPS) is positive at {data['eps']:.2f}\n"
 
     if data["pb"] is not None and data["pb"] < 3:
         score += 10
         reasons.append("Low Price/Book (<3)")
+        explanation += f"- Price/Book ratio is {data['pb']:.2f}, relatively attractive\n"
 
     if score > 60:
         score += 10
         reasons.append("Multiple strong signals")
+        explanation += "- Multiple strong value signals detected\n"
+
+    if score < 40:
+        explanation += "- No major valuation anomaly or sharp drop detected (mild opportunity)\n"
 
     summary = "; ".join(reasons)
-    thesis = None
-
-    if openai_key and score > 0:
-        try:
-            thesis = generate_thesis(data, openai_key)
-        except Exception as e:
-            thesis = f"(AI thesis unavailable: {str(e)})"
 
     result = {
         "name": data.get("name", ticker),
@@ -82,11 +85,8 @@ def score_stock(ticker, openai_key=None, batch=False):
         "eps": data.get("eps"),
         "price_drop_7d": data.get("price_drop_7d"),
         "price_drop_30d": data.get("price_drop_30d"),
-        "thesis": thesis
+        "explanation": explanation.strip()
     }
-
-    if thesis:
-        result["summary"] += f"\n\n**AI Thesis:** {thesis}"
 
     return result
 
