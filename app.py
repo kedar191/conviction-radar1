@@ -41,7 +41,9 @@ elif mode == "Batch Mode":
     st.subheader("Top Undervalued Picks:")
     for r in top:
         with st.expander(f"{r['name']} ({r['ticker']}) – Score: {r['score']}"):
-            st.write(r["summary"])
-            st.json({k: v for k, v in r.items() if k not in ["summary"]})
+            st.write(r["summary"])  # This line is optional; can remove if you prefer
+            st.markdown(f"**Why this is flagged:**\n{r['explanation']}")
+            st.json({k: v for k, v in r.items() if k not in ["summary", "explanation"]})
+
 
 st.info("Built by Kedar & ChatGPT. Data via Yahoo Finance. Thesis by GPT-4 (optional).")
