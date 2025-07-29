@@ -1,0 +1,16 @@
+batch_tickers = [
+    # US Tech / AI / Semiconductors / Finance / Genetics / Auto / Defense
+    "AAPL", "MSFT", "NVDA", "GOOG", "META", "AMZN", "TSLA", "AMD", "INTC", "QCOM", "AVGO", "ASML",
+    "TSM", "MRVL", "LRCX", "AMAT", "PYPL", "ADBE", "CRM", "SNOW", "PLTR", "C3AI", "SOUN", "ILMN",
+    "CRSP", "EDIT", "VRTX", "MDB", "BA", "LMT", "RTX", "NOC", "GD", "JPM", "V", "MA", "BRK-B",
+    "GS", "BAC", "WFC", "RIVN", "NIO", "XPEV", "FSR", "MBLY", "LAZR", "APTV", "AUR", "GOEV", "LHX",
+
+    # India Finance / IT / FMCG / Defense / Auto / Semicon
+    "RELIANCE.NS", "HDFCBANK.NS", "ICICIBANK.NS", "KOTAKBANK.NS", "SBIN.NS", "BAJFINANCE.NS",
+    "AXISBANK.NS", "TCS.NS", "INFY.NS", "WIPRO.NS", "LTIM.NS", "HCLTECH.NS", "ITC.NS", "HINDUNILVR.NS",
+    "NESTLEIND.NS", "DABUR.NS", "TITAN.NS", "ASIANPAINT.NS", "MARUTI.NS", "TATAMOTORS.NS", "M&M.NS",
+    "ASHOKLEY.NS", "DIXON.NS", "TATAELXSI.NS", "TEJASNET.NS", "HAL.NS", "BEL.NS", "BDL.NS", "LT.NS",
+    "SUNPHARMA.NS", "DIVISLAB.NS", "CIPLA.NS", "DRREDDY.NS", "ULTRACEMCO.NS", "SHREECEM.NS", "GRASIM.NS",
+    "ADANIGREEN.NS", "ADANIPORTS.NS", "ADANIPOWER.NS", "POWERGRID.NS", "NTPC.NS", "ONGC.NS", "COALINDIA.NS",
+    "BHARTIARTL.NS", "HAVELLS.NS", "PIDILITIND.NS", "GODREJCP.NS", "BRITANNIA.NS", "COLPAL.NS"
+]
