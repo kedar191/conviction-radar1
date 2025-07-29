@@ -1,6 +1,5 @@
 import yfinance as yf
 import openai
-import os
 
 def get_fundamentals(ticker):
     try:
@@ -101,11 +100,10 @@ def generate_thesis(data, openai_key):
         "Write a one-sentence summary for a savvy investor: "
         "Is this a potentially undervalued opportunity? Use only data above."
     )
-        response = openai.ChatCompletion.create(
+    response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",  # Or "gpt-4" if you have access
         messages=[{"role": "user", "content": prompt}],
         max_tokens=80,
         temperature=0.5,
     )
     return response.choices[0].message.content.strip()
-
